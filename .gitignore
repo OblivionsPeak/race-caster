@@ -2,3 +2,7 @@ venv/
 __pycache__/
 racecaster_caption.txt
 *.mp3
+!preview/*.mp3
+build/
+dist/
+*.spec
