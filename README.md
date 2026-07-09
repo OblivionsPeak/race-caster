@@ -7,7 +7,16 @@ account, no subscription: it runs on your PC next to the sim.
 
 **Landing page:** https://oblivionspeak.github.io/race-caster/
 
-## Hear it in 2 minutes (no iRacing needed)
+## Easiest start: the EXE (no Python needed)
+
+1. Download **[RaceCaster.exe](https://github.com/OblivionsPeak/race-caster/releases/latest/download/RaceCaster.exe)**
+2. Double-click it with iRacing running (any session) — the booth connects and starts calling
+3. Or hear it right now with no sim: run `RaceCaster.exe --demo` from a terminal
+
+You can also preview the booth **in your browser** on the
+[landing page](https://oblivionspeak.github.io/race-caster/) — real generated audio, no download.
+
+## From source
 
 ```bat
 setup.bat      :: one-time: venv + dependencies

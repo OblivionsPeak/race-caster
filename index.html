@@ -17,8 +17,16 @@
   .cta { display:inline-block; background:var(--hot); color:#160a04; font-weight:700; padding:12px 22px; border-radius:9px; text-decoration:none; margin-right:12px; }
   .cta.ghost { background:transparent; color:var(--cyan); border:1px solid var(--cyan); }
   .demo { background:var(--panel); border:1px solid var(--seam); border-left:4px solid var(--cyan); border-radius:10px; padding:18px 22px; margin:36px 0; font-family:Consolas,monospace; font-size:14.5px; color:var(--dim); }
-  .demo b { color:var(--ink); display:block; margin:8px 0; font-weight:500; }
-  .demo b::before { content:"🎙 "; }
+  .booth-head { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  #booth-play { background:var(--cyan); color:#06201d; border:0; font:700 15px/1 "Segoe UI",sans-serif; padding:11px 18px; border-radius:8px; cursor:pointer; }
+  #booth-play:hover { filter:brightness(1.1); }
+  #booth-status { font-size:12.5px; }
+  #booth-lines { margin-top:6px; max-height:230px; overflow-y:auto; }
+  .booth-line { color:var(--ink); margin:9px 0; padding-left:4px; opacity:.55; transition:opacity .3s; }
+  .booth-line.on { opacity:1; }
+  .booth-line.on::after { content:" ●"; color:var(--hot); animation:blink 1s infinite; }
+  @keyframes blink { 50% { opacity:.2; } }
+  .btag { display:inline-block; background:#0d0e11; border:1px solid var(--seam); color:var(--cyan); font-size:10.5px; letter-spacing:.8px; border-radius:4px; padding:2px 7px; margin-right:10px; vertical-align:1px; }
   h2 { margin:42px 0 12px; font-size:24px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:16px; }
   .card { background:var(--panel); border:1px solid var(--seam); border-radius:10px; padding:16px 18px; }
@@ -36,17 +44,68 @@
   <h1>Race<span class="mic">Caster</span></h1>
   <p class="tag">The AI commentary booth for iRacing — live play-by-play spoken over your stream, generated from telemetry, running entirely on your PC.</p>
 
-  <a class="cta" href="https://github.com/OblivionsPeak/race-caster">Get it on GitHub</a>
-  <a class="cta ghost" href="https://github.com/OblivionsPeak/race-caster#hear-it-in-2-minutes-no-iracing-needed">2-minute demo</a>
+  <a class="cta" href="https://github.com/OblivionsPeak/race-caster/releases/latest/download/RaceCaster.exe">⬇ Download RaceCaster.exe</a>
+  <a class="cta ghost" href="https://github.com/OblivionsPeak/race-caster">Source on GitHub</a>
 
-  <div class="demo">
-    what the booth sounds like —
-    <b>And we're green! 24 cars streaming into turn one.</b>
-    <b>Keep an eye on P2 — Chen is all over the back of Davenport, just 0.4 of a second in it.</b>
-    <b>Chen takes the LEAD from Davenport! What a move!</b>
-    <b>Fastest lap of the race — Ricci with a 1:31.877!</b>
-    <b>CHECKERED FLAG! Chen wins the race!</b>
+  <div class="demo" id="booth">
+    <div class="booth-head">
+      <button id="booth-play">▶ &nbsp;Hear the booth call a race</button>
+      <span id="booth-status">real output — 10 calls from the demo race, 60 seconds</span>
+    </div>
+    <div id="booth-lines"></div>
   </div>
+  <script>
+  (function () {
+    const CALLS = [
+      { f: 1,  tag: "GREEN FLAG",   t: "Lights out and away we go — six starters funneling down to the first corner." },
+      { f: 2,  tag: "BATTLE  P1",   t: "Pressure building on Vargas — Davenport now just half a second behind in the fight for the lead." },
+      { f: 3,  tag: "LEAD CHANGE",  t: "Davenport takes the LEAD from Vargas! What a move!" },
+      { f: 4,  tag: "FASTEST LAP",  t: "Fastest lap of the race — Chen with a 1:31.8!" },
+      { f: 5,  tag: "CAUTION",      t: "Caution is out — yellow flag flying." },
+      { f: 6,  tag: "RESTART",      t: "Green flag once more — back underway." },
+      { f: 7,  tag: "OVERTAKE P3",  t: "Ricci makes the move on Chen for P3!" },
+      { f: 8,  tag: "WHITE FLAG",   t: "One lap to go! Can Davenport hold on?" },
+      { f: 9,  tag: "CHECKERED",    t: "Davenport takes the win! What a drive." },
+      { f: 10, tag: "PODIUM",       t: "So the top three: Davenport, Vargas, Ricci." },
+    ];
+    const btn = document.getElementById("booth-play");
+    const status = document.getElementById("booth-status");
+    const box = document.getElementById("booth-lines");
+    let playing = false, current = null;
+
+    function addLine(call) {
+      const row = document.createElement("div");
+      row.className = "booth-line on";
+      row.innerHTML = '<span class="btag">' + call.tag + '</span>' + call.t;
+      box.appendChild(row);
+      box.scrollTop = box.scrollHeight;
+      return row;
+    }
+
+    async function play() {
+      if (playing) { playing = false; if (current) current.pause(); btn.textContent = "▶  Hear the booth call a race"; return; }
+      playing = true;
+      btn.textContent = "◼  Stop";
+      box.innerHTML = "";
+      for (const call of CALLS) {
+        if (!playing) break;
+        const row = addLine(call);
+        status.textContent = "on air…";
+        try {
+          current = new Audio("preview/line" + String(call.f).padStart(2, "0") + ".mp3");
+          await current.play();
+          await new Promise(res => { current.onended = res; current.onerror = res; });
+        } catch (e) { /* autoplay blocked mid-run or missing file — keep captioning */ }
+        row.classList.remove("on");
+        if (playing) await new Promise(res => setTimeout(res, 500));
+      }
+      playing = false;
+      btn.textContent = "↻  Play it again";
+      status.textContent = "that's the booth — every line generated + voiced by RaceCaster";
+    }
+    btn.addEventListener("click", play);
+  })();
+  </script>
 
   <h2>What it calls</h2>
   <div class="grid">
