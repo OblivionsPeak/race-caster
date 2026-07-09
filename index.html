@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaceCaster — AI commentary booth for iRacing</title>
+<meta name="description" content="RaceCaster watches your iRacing telemetry and speaks live play-by-play commentary over your stream. Overtakes, battles, pit stops, fastest laps — called by a neural voice, all running locally.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23101114'/%3E%3Cpath d='M16 6a5 5 0 0 1 5 5v5a5 5 0 0 1-10 0v-5a5 5 0 0 1 5-5z' fill='%23ff4d00'/%3E%3Cpath d='M9 16a7 7 0 0 0 14 0h2a9 9 0 0 1-8 8.9V28h-2v-3.1A9 9 0 0 1 7 16h2z' fill='%23e8e6e1'/%3E%3C/svg%3E">
+<style>
+  :root { --bg:#0d0e11; --panel:#15171c; --seam:#262a32; --ink:#e8e6e1; --dim:#9a938a; --hot:#ff4d00; --cyan:#2dd6c1; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink); font:16px/1.65 "Segoe UI",system-ui,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:48px 24px 80px; }
+  h1 { font-size:44px; letter-spacing:.5px; }
+  h1 .mic { color:var(--hot); }
+  .tag { color:var(--dim); font-size:19px; margin:6px 0 28px; }
+  .cta { display:inline-block; background:var(--hot); color:#160a04; font-weight:700; padding:12px 22px; border-radius:9px; text-decoration:none; margin-right:12px; }
+  .cta.ghost { background:transparent; color:var(--cyan); border:1px solid var(--cyan); }
+  .demo { background:var(--panel); border:1px solid var(--seam); border-left:4px solid var(--cyan); border-radius:10px; padding:18px 22px; margin:36px 0; font-family:Consolas,monospace; font-size:14.5px; color:var(--dim); }
+  .demo b { color:var(--ink); display:block; margin:8px 0; font-weight:500; }
+  .demo b::before { content:"🎙 "; }
+  h2 { margin:42px 0 12px; font-size:24px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:16px; }
+  .card { background:var(--panel); border:1px solid var(--seam); border-radius:10px; padding:16px 18px; }
+  .card h3 { font-size:16px; margin-bottom:6px; color:var(--cyan); }
+  .card p { font-size:14px; color:var(--dim); }
+  code { background:var(--panel); border:1px solid var(--seam); border-radius:5px; padding:2px 7px; font-size:14px; }
+  ol { margin:12px 0 0 20px; color:var(--dim); }
+  ol li { margin:6px 0; }
+  .foot { margin-top:56px; color:var(--dim); font-size:14px; border-top:1px solid var(--seam); padding-top:20px; }
+  a { color:var(--cyan); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Race<span class="mic">Caster</span></h1>
+  <p class="tag">The AI commentary booth for iRacing — live play-by-play spoken over your stream, generated from telemetry, running entirely on your PC.</p>
+
+  <a class="cta" href="https://github.com/OblivionsPeak/race-caster">Get it on GitHub</a>
+  <a class="cta ghost" href="https://github.com/OblivionsPeak/race-caster#hear-it-in-2-minutes-no-iracing-needed">2-minute demo</a>
+
+  <div class="demo">
+    what the booth sounds like —
+    <b>And we're green! 24 cars streaming into turn one.</b>
+    <b>Keep an eye on P2 — Chen is all over the back of Davenport, just 0.4 of a second in it.</b>
+    <b>Chen takes the LEAD from Davenport! What a move!</b>
+    <b>Fastest lap of the race — Ricci with a 1:31.877!</b>
+    <b>CHECKERED FLAG! Chen wins the race!</b>
+  </div>
+
+  <h2>What it calls</h2>
+  <div class="grid">
+    <div class="card"><h3>Overtakes & lead changes</h3><p>Position swaps in the top 10, with special drama reserved for the lead.</p></div>
+    <div class="card"><h3>Battles brewing</h3><p>Sustained sub-0.8s gaps get called before the move happens — like a real spotter-caster.</p></div>
+    <div class="card"><h3>Pit cycles</h3><p>In-laps and out-laps for the front runners.</p></div>
+    <div class="card"><h3>Fastest laps & flags</h3><p>Purple laps, cautions, restarts, white flag, checkers and the podium.</p></div>
+  </div>
+
+  <h2>Setup</h2>
+  <ol>
+    <li>Clone or download the repo, run <code>setup.bat</code> once</li>
+    <li><code>run-demo.bat</code> — hear it commentate a simulated race, no sim needed</li>
+    <li><code>run-live.bat</code> with iRacing open — race or spectate, the booth calls it</li>
+    <li>OBS: capture desktop audio for the voice; point a Text source at <code>racecaster_caption.txt</code> for captions</li>
+  </ol>
+
+  <h2>Who it's for</h2>
+  <div class="grid">
+    <div class="card"><h3>Solo streamers</h3><p>Your race, with a commentary track. It calls your battles while you drive them.</p></div>
+    <div class="card"><h3>League broadcasts</h3><p>Run it on the spectator/stream PC — commentary every round, no volunteer burnout.</p></div>
+    <div class="card"><h3>Next up</h3><p>Replay narrator: commentated highlight reels rendered from any saved replay.</p></div>
+  </div>
+
+  <p class="foot">Free & open source · Windows + Python · voice by free Microsoft neural TTS ·
+    by <a href="https://github.com/OblivionsPeak">OblivionsPeak</a> ·
+    <a href="https://ko-fi.com/metalprophecymedia">tip the booth ♥</a></p>
+</div>
+</body>
+</html>
